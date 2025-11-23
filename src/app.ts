@@ -1,7 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'; // این خط رو اضافه کن
+import connectDB from './config/database';
+import authorRoutes from './routes/authorRouters';
 
+
+// Load env variables first
 dotenv.config();
 
 const app = express();
@@ -9,18 +13,17 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/main-project')
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+// Initialize database connection
+// connectDB();
 
 app.get('/', (req, res) => {
-  res.send("Library API is running!");
+    res.json({ 
+        message: "Library API is running!",
+        database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"
+    });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
