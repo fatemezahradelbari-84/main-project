@@ -9,9 +9,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI || '')
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/main-project')
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 app.get('/', (req, res) => {
   res.send("Library API is running!");
