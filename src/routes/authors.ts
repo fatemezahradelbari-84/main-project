@@ -10,12 +10,11 @@ import {
 
 const router = express.Router();
 
-// CRUD routes برای نویسنده
 router.post('/', createAuthor);
 router.get('/', getAuthors);
 router.get('/:id', getAuthorById);
-router.put('/:id', updateAuthor);     // آپدیت کامل
-router.patch('/:id', patchAuthor);    // آپدیت جزئی
-router.delete('/:id', deleteAuthor);  // حذف
+router.put('/:id', updateAuthor);     // Put
+router.patch('/:id', patchAuthor);    //Patch
+router.delete('/:id', deleteAuthor);  // Delete
 
 export default router;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Book from '../models/Book';
 
-// ایجاد کتاب جدید
+// Create new book
 export const createBook = async (req: Request, res: Response): Promise<void> => {
     try {
         const { title, image, publisher, author } = req.body;
@@ -27,7 +27,7 @@ export const createBook = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// دریافت همه کتاب‌ها
+//Recieve books
 export const getBooks = async (req: Request, res: Response): Promise<void> => {
     try {
         const books = await Book.find().populate('author');
@@ -44,7 +44,7 @@ export const getBooks = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-// دریافت کتاب با ID
+//Recieve books with ID
 export const getBookById = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -71,7 +71,7 @@ export const getBookById = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-// آپدیت کامل کتاب (PUT)
+//(PUT)
 export const updateBook = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -102,7 +102,7 @@ export const updateBook = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// آپدیت جزئی کتاب (PATCH)
+//(PATCH)
 export const patchBook = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -133,7 +133,7 @@ export const patchBook = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-// حذف کتاب
+//Delete book
 export const deleteBook = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;

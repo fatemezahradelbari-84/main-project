@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Author from '../models/Author';
 
-// ایجاد نویسنده
+//Create author
 export const createAuthor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { name, family, gender, age } = req.body;
@@ -22,7 +22,7 @@ export const createAuthor = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-// دریافت همه نویسنده‌ها
+// Recieve authors
 export const getAuthors = async (req: Request, res: Response): Promise<void> => {
     try {
         const authors = await Author.find();
@@ -39,7 +39,7 @@ export const getAuthors = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// دریافت نویسنده با ID
+// Recieve author with ID
 export const getAuthorById = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -63,7 +63,7 @@ export const getAuthorById = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-// آپدیت کامل نویسنده (PUT)
+//(PUT)
 export const updateAuthor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -94,7 +94,7 @@ export const updateAuthor = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-// آپدیت جزئی نویسنده (PATCH)
+//(PATCH)
 export const patchAuthor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -125,7 +125,7 @@ export const patchAuthor = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-// حذف نویسنده
+//Delete author
 export const deleteAuthor = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;

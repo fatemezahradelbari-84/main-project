@@ -4,7 +4,7 @@ export interface IBook extends Document {
   title: string;
   image: string;
   publisher: string;
-  author: Types.ObjectId; // ارتباط با جدول نویسندگان
+  author: Types.ObjectId; 
 }
 
 const bookSchema = new Schema({
@@ -23,7 +23,7 @@ const bookSchema = new Schema({
   },
   author: {
     type: Schema.Types.ObjectId,
-    ref: 'Author', // ارتباط با مدل Author
+    ref: 'Author',
     required: true
   }
 }, {

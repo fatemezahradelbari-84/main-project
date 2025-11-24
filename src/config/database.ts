@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const connectDB = async (): Promise<void> => {
     try {
-        // از MONGODB_URI یا MONGO_URI پشتیبانی میکنه
         const mongoURI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/library-project';
         
         const conn = await mongoose.connect(mongoURI);
@@ -24,7 +23,6 @@ const connectDB = async (): Promise<void> => {
     }
 };
 
-// هندلر برای events مختلف
 mongoose.connection.on('disconnected', () => {
     console.log('MongoDB disconnected');
 });

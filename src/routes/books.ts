@@ -14,8 +14,7 @@ const router = express.Router();
 router.post('/', createBook);
 router.get('/', getBooks);
 router.get('/:id', getBookById);
-router.put('/:id', updateBook);     // آپدیت کامل
-router.patch('/:id', patchBook);    // آپدیت جزئی
-router.delete('/:id', deleteBook);  // حذف
-
+router.put('/:id', updateBook);     //Put
+router.patch('/:id', patchBook);    //Patch
+router.delete('/:id', deleteBook);  // Delete
 export default router;
