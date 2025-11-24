@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import authorRoutes from './routes/authors';
 import connectDB from './config/database';
+import bookRoutes from './routes/books';
 
 
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/authors', authorRoutes);
+app.use('/api/books', bookRoutes);
 
 app.get('/', (req, res) => {
     res.json({ 
