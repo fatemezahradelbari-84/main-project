@@ -1,161 +1,109 @@
 import { Request, Response } from 'express';
-import Book from '../models/Book';
+import {
+  createBook as serviceCreate,
+  getBooks as serviceGetAll,
+  getBookById as serviceGetById,
+  updateBook as serviceUpdate,
+  patchBook as servicePatch,
+  deleteBook as serviceDelete
+} from '../service/bookService';
 
-// Create new book
-export const createBook = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { title, image, publisher, author } = req.body;
+// Create
+export const createBook = async (req: Request, res: Response) => {
+  try {
+    const db = req.body.db;
+    const result = await serviceCreate(req.body, db);
 
-        const newBook = await Book.create({
-            title,
-            image,
-            publisher,
-            author,
-        });
-
-        res.status(201).json({
-            success: true,
-            message: 'کتاب با موفقیت ثبت شد',
-            data: newBook,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در ایجاد کتاب',
-            error: error.message,
-        });
-    }
+    res.status(201).json({
+      success: true,
+      message: 'کتاب ایجاد شد',
+      data: result
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
 
-//Recieve books
-export const getBooks = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const books = await Book.find().populate('author');
-        res.json({
-            success: true,
-            data: books,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در دریافت کتاب‌ها',
-            error: error.message,
-        });
-    }
+// Get all
+export const getBooks = async (req: Request, res: Response) => {
+  try {
+    const db = req.query.db as any;
+    const result = await serviceGetAll(db);
+
+    res.json({ success: true, data: result });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
 
-//Recieve books with ID
-export const getBookById = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const book = await Book.findById(id).populate('author');
+// Get by ID
+export const getBookById = async (req: Request, res: Response) => {
+  try {
+    const db = req.query.db as any;
+    const result = await serviceGetById(req.params.id, db);
 
-        if (!book) {
-            res.status(404).json({
-                success: false,
-                message: 'کتاب پیدا نشد',
-            });
-            return;
-        }
-
-        res.json({
-            success: true,
-            data: book,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در دریافت کتاب',
-            error: error.message,
-        });
+    if (!result) {
+      res.status(404).json({ success: false, message: 'کتاب پیدا نشد' });
+      return;
     }
+
+    res.json({ success: true, data: result });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
 
-//(PUT)
-export const updateBook = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const updatedBook = await Book.findByIdAndUpdate(id, req.body, {
-            new: true,
-            runValidators: true,
-        });
+// Update (PUT)
+export const updateBook = async (req: Request, res: Response) => {
+  try {
+    const db = req.body.db;
+    const result = await serviceUpdate(req.params.id, req.body, db);
 
-        if (!updatedBook) {
-            res.status(404).json({
-                success: false,
-                message: 'کتاب پیدا نشد',
-            });
-            return;
-        }
-
-        res.json({
-            success: true,
-            message: 'کتاب با موفقیت بروزرسانی شد',
-            data: updatedBook,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در بروزرسانی کتاب',
-            error: error.message,
-        });
+    if (!result) {
+      res.status(404).json({ success: false, message: 'کتاب پیدا نشد' });
+      return;
     }
+
+    res.json({ success: true, message: 'کتاب بروزرسانی شد', data: result });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
 
-//(PATCH)
-export const patchBook = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const patchedBook = await Book.findByIdAndUpdate(id, req.body, {
-            new: true,
-            runValidators: true,
-        });
+// Patch
+export const patchBook = async (req: Request, res: Response) => {
+  try {
+    const db = req.body.db;
+    const result = await servicePatch(req.params.id, req.body, db);
 
-        if (!patchedBook) {
-            res.status(404).json({
-                success: false,
-                message: 'کتاب پیدا نشد',
-            });
-            return;
-        }
-
-        res.json({
-            success: true,
-            message: 'کتاب با موفقیت جزئی بروزرسانی شد',
-            data: patchedBook,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در بروزرسانی جزئی کتاب',
-            error: error.message,
-        });
+    if (!result) {
+      res.status(404).json({ success: false, message: 'کتاب پیدا نشد' });
+      return;
     }
+
+    res.json({
+      success: true,
+      message: 'کتاب بروزرسانی جزئی شد',
+      data: result
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
 
-//Delete book
-export const deleteBook = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const deletedBook = await Book.findByIdAndDelete(id);
+// Delete
+export const deleteBook = async (req: Request, res: Response) => {
+  try {
+    const db = req.query.db as any;
+    const result = await serviceDelete(req.params.id, db);
 
-        if (!deletedBook) {
-            res.status(404).json({
-                success: false,
-                message: 'کتاب پیدا نشد',
-            });
-            return;
-        }
-
-        res.json({
-            success: true,
-            message: 'کتاب با موفقیت حذف شد',
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            message: 'خطا در حذف کتاب',
-            error: error.message,
-        });
+    if (!result) {
+      res.status(404).json({ success: false, message: 'کتاب پیدا نشد' });
+      return;
     }
+
+    res.json({ success: true, message: 'کتاب حذف شد' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 };
