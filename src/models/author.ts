@@ -19,7 +19,7 @@ const authorSchema = new Schema({
     min: [18, 'سن نویسنده نمی‌تواند کمتر از 18 باشد'],
     max: [100, 'سن نویسنده نمی‌تواند بیشتر از 100 باشد'],
     validate: {
-      validator: Number.isInteger,  // فقط اعداد صحیح
+      validator: Number.isInteger, 
       message: 'سن باید یک عدد صحیح باشد'
     }
   }

@@ -10,11 +10,11 @@ import {
 
 const router = express.Router();
 
-router.post('/', createBook);               // db در body
-router.get('/', getBooks);                  // db در query
-router.get('/:id', getBookById);            // db در query
-router.put('/:id', updateBook);             // db در body
-router.patch('/:id', patchBook);            // db در body
-router.delete('/:id', deleteBook);          // db در query
+router.post('/', createBook);              
+router.get('/', getBooks);                  
+router.get('/:id', getBookById);          
+router.put('/:id', updateBook);             
+router.patch('/:id', patchBook);            
+router.delete('/:id', deleteBook);         
 
 export default router;
