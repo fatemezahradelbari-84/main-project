@@ -2,12 +2,11 @@ import { Request, Response } from "express";
 import Book from "../models/Book";
 import { z } from "zod";
 
-// Schema برای اعتبارسنجی کتاب
 const bookSchema = z.object({
   title: z.string().min(1),
   image: z.string().optional(),
   publisher: z.string().optional(),
-  author: z.string().min(1), // باید آیدی نویسنده باشد
+  author: z.string().min(1), 
 });
 
 // GET ALL BOOKS

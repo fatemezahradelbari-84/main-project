@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import Author from "../models/Author";
-import pool from "../config/sql";
 import { z } from "zod";
-import { isMongo, isMySql } from "../config/version";
 
 const authorSchema = z.object({
   name: z.string().min(3),
@@ -13,121 +11,146 @@ const authorSchema = z.object({
 // GET ALL AUTHORS
 export const getAuthors = async (req: Request, res: Response) => {
   try {
-    if (isMongo()) {
-      const authors = await Author.find();
-      return res.json(authors);
-    }
-
-    const [rows] = await pool.query("SELECT * FROM authors");
-    return res.json(rows);
-
-  } catch (err) {
-    res.status(500).json({ message: "خطای سرور" });
+    const authors = await Author.find();
+    return res.json({ success: true, data: authors });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در دریافت نویسندگان",
+      error: err.message,
+    });
   }
 };
 
-// GET BY ID
+// GET AUTHOR BY ID
 export const getAuthorById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const author = await Author.findById(id);
 
-    if (isMongo()) {
-      const author = await Author.findById(id);
-      if (!author) return res.status(404).json({ message: "یافت نشد" });
-      return res.json(author);
+    if (!author) {
+      return res.status(404).json({
+        success: false,
+        message: "نویسنده پیدا نشد",
+      });
     }
 
-    const [rows] = await pool.query("SELECT * FROM authors WHERE id = ?", [id]);
-    if ((rows as any[]).length === 0)
-      return res.status(404).json({ message: "یافت نشد" });
-
-    return res.json(rows[0]);
-
-  } catch (err) {
-    res.status(500).json({ message: "خطای سرور" });
+    return res.json({ success: true, data: author });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در دریافت نویسنده",
+      error: err.message,
+    });
   }
 };
 
-// CREATE
+// CREATE AUTHOR
 export const createAuthor = async (req: Request, res: Response) => {
   try {
     const parsedData = authorSchema.parse(req.body);
+    const newAuthor = await Author.create(parsedData);
 
-    if (isMongo()) {
-      const author = await Author.create(parsedData);
-      return res.status(201).json(author);
-    }
-
-    const { name, gender, age } = parsedData;
-
-    const [result] = await pool.query(
-      "INSERT INTO authors (name, gender, age) VALUES (?, ?, ?)",
-      [name, gender, age]
-    );
-
-    const [rows] = await pool.query("SELECT * FROM authors WHERE id = ?", [
-      (result as any).insertId
-    ]);
-
-    return res.status(201).json(rows[0]);
-
-  } catch (err) {
-    res.status(500).json({ message: "خطای سرور" });
+    return res.status(201).json({
+      success: true,
+      message: "نویسنده با موفقیت ایجاد شد",
+      data: newAuthor,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در ایجاد نویسنده",
+      error: err.message,
+    });
   }
 };
 
-// UPDATE
+// UPDATE AUTHOR (PUT)
 export const updateAuthor = async (req: Request, res: Response) => {
   try {
-    const parsedData = authorSchema.partial().parse(req.body);
     const { id } = req.params;
+    const parsedData = authorSchema.parse(req.body);
 
-    if (isMongo()) {
-      const author = await Author.findByIdAndUpdate(id, parsedData, {
-        new: true
+    const updatedAuthor = await Author.findByIdAndUpdate(id, parsedData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedAuthor) {
+      return res.status(404).json({
+        success: false,
+        message: "نویسنده پیدا نشد",
       });
-      if (!author) return res.status(404).json({ message: "یافت نشد" });
-      return res.json(author);
     }
 
-    const { name, gender, age } = parsedData;
-
-    const [result] = await pool.query(
-      "UPDATE authors SET name=?, gender=?, age=? WHERE id=?",
-      [name, gender, age, id]
-    );
-
-    if ((result as any).affectedRows === 0)
-      return res.status(404).json({ message: "یافت نشد" });
-
-    const [rows] = await pool.query("SELECT * FROM authors WHERE id = ?", [id]);
-
-    return res.json(rows[0]);
-
-  } catch (err) {
-    res.status(500).json({ message: "خطای سرور" });
+    return res.json({
+      success: true,
+      message: "نویسنده با موفقیت بروزرسانی شد",
+      data: updatedAuthor,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در بروزرسانی نویسنده",
+      error: err.message,
+    });
   }
 };
 
-// DELETE
+// PATCH AUTHOR (جزئی)
+export const patchAuthor = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const parsedData = authorSchema.partial().parse(req.body);
+
+    const patchedAuthor = await Author.findByIdAndUpdate(id, parsedData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!patchedAuthor) {
+      return res.status(404).json({
+        success: false,
+        message: "نویسنده پیدا نشد",
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "نویسنده با موفقیت جزئی بروزرسانی شد",
+      data: patchedAuthor,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در بروزرسانی جزئی نویسنده",
+      error: err.message,
+    });
+  }
+};
+
+// DELETE AUTHOR
 export const deleteAuthor = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const deletedAuthor = await Author.findByIdAndDelete(id);
 
-    if (isMongo()) {
-      const author = await Author.findByIdAndDelete(id);
-      if (!author) return res.status(404).json({ message: "یافت نشد" });
-      return res.json({ message: "حذف شد" });
+    if (!deletedAuthor) {
+      return res.status(404).json({
+        success: false,
+        message: "نویسنده پیدا نشد",
+      });
     }
 
-    const [result] = await pool.query("DELETE FROM authors WHERE id=?", [id]);
-
-    if ((result as any).affectedRows === 0)
-      return res.status(404).json({ message: "یافت نشد" });
-
-    return res.json({ message: "حذف شد" });
-
-  } catch (err) {
-    res.status(500).json({ message: "خطای سرور" });
+    return res.json({
+      success: true,
+      message: "نویسنده با موفقیت حذف شد",
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      message: "خطا در حذف نویسنده",
+      error: err.message,
+    });
   }
 };
