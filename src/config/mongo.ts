@@ -24,7 +24,6 @@ export const connectMongo = async (): Promise<void> => {
   }
 };
 
-// Events
 mongoose.connection.on("disconnected", () => {
   console.log("MongoDB disconnected");
 });
