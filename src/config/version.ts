@@ -1,15 +1,10 @@
-type DBVersion = 1 | 2;
 type Engine = "mongo" | "mysql";
 
-export const versionConfig = {
-  currentVersion: 1 as DBVersion,
-
-  dbByVersion: {
-    1: "mongo",
-    2: "mysql"
-  } as Record<DBVersion, Engine>,
+export const DatabaseType = {
+  // فقط نوع دیتابیس از ENV گرفته می‌شود
+  typeDatabase: (process.env.TYPE_DATABASE as Engine) || "mongo",
 
   getDbEngine(): Engine {
-    return this.dbByVersion[this.currentVersion];
+    return this.typeDatabase;
   }
 };
